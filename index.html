@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão | Igreja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        neutral: '#1D2129',
+                        light: '#F2F3F5',
+                        danger: '#F53F3F',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        roxo: '#784FD1'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .form-group-spacing {
+                @apply mb-4 md:mb-5;
+            }
+            .input-style {
+                @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all duration-200;
+            }
+            .label-style {
+                @apply block text-sm font-medium text-gray-700 mb-1;
+            }
+            .tab-active {
+                @apply border-b-2 border-primary text-primary font-medium;
+            }
+            .card-dashboard {
+                @apply bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow;
+            }
+            .card-departamento {
+                @apply bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-neutral min-h-screen flex">
+    <!-- TELA LOGIN -->
+<div id="telaLogin" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+        <h2 class="text-2xl font-bold text-center mb-6">
+            Login Gestão para Igrejas
+        </h2>
+
+        <input
+            type="text"
+            id="usuario"
+            placeholder="Usuário"
+            class="input-style mb-4">
+
+        <input
+            type="password"
+            id="senha"
+            placeholder="Senha"
+            class="input-style mb-4">
+
+        <button
+            onclick="fazerLogin()"
+            class="w-full bg-primary text-white py-2 rounded-lg">
+            Entrar
+        </button>
+
+        <p id="erroLogin" class="text-danger text-sm mt-3 text-center"></p>
+    </div>
+</div>
+    
+    <!-- Sidebar / Menu Principal -->
+    <aside class="w-[260px] bg-white shadow-lg h-screen fixed left-0 top-0 z-10 transition-all duration-300">
+        <div class="h-16 flex items-center justify-center border-b border-gray-200">
+            <h1 class="text-[18px] font-bold text-primary flex items-center gap-2">
+                <i class="fa fa-church text-xl"></i>
+                Gestão Igreja
+            </h1>
+        </div>
+
+        <nav class="p-4 h-[calc(100vh-64px)] overflow-y-auto scrollbar-hide">
+            <ul class="space-y-1">
+                <li>
+                    <a href="#" id="menuDashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium">
+                        <i class="fa fa-tachometer w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuCadastrar" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-user-plus w-5 text-center"></i>
+                        <span>Cadastrar Membro</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuListar" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-users w-5 text-center"></i>
+                        <span>Ver Membros</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuAniversariantes" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-birthday-cake w-5 text-center"></i>
+                        <span>Aniversariantes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuDepartamentos" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-sitemap w-5 text-center"></i>
+                        <span>Departamentos</span>
+                    </a>
+                </li>
+                <li>
+    <a href="#" id="menuFinanceiro"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+        <i class="fa fa-money w-5 text-center"></i>
+        <span>Financeiro</span>
+    </a>
+</li>
+                <li>
+                    <a href="#" id="menuRelatorios" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-file-text w-5 text-center"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="menuConfiguracoes" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/5 hover:text-primary transition-all">
+                        <i class="fa fa-cog w-5 text-center"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+<li>
+    <a href="#" onclick="logout()"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600">
+        <i class="fa fa-sign-out"></i>
+        <span>Sair</span>
+    </a>
+</li>
+
+    <!-- Conteúdo Principal -->
+    <main class="ml-[260px] flex-1 p-6 transition-all duration-300">
+
+        <!-- ========== TELA DASHBOARD ========== -->
+        <div id="telaDashboard" class="block">
+            <header class="mb-8">
+                <h2 class="text-[24px] font-bold text-neutral">Dashboard</h2>
+                <p class="text-gray-500 text-sm">Visão geral e estatísticas da igreja</p>
+            </header>
+
+            <!-- Cards de Estatísticas Principais -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card-dashboard">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Total de Membros</p>
+                            <h3 id="totalMembros" class="text-[32px] font-bold text-neutral mt-2">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xl">
+                            <i class="fa fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-dashboard">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Batizados</p>
+                            <h3 id="totalBatizados" class="text-[32px] font-bold text-success mt-2">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-lg bg-success/10 text-success flex items-center justify-center text-xl">
+                            <i class="fa fa-tint"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-dashboard">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Homens</p>
+                            <h3 id="totalHomens" class="text-[32px] font-bold text-primary mt-2">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xl">
+                            <i class="fa fa-male"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-dashboard">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Mulheres</p>
+                            <h3 id="totalMulheres" class="text-[32px] font-bold text-warning mt-2">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-lg bg-warning/10 text-warning flex items-center justify-center text-xl">
+                            <i class="fa fa-female"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+            <!-- Gráficos e Ações Rápidas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card-dashboard lg:col-span-2">
+                    <h3 class="font-semibold text-lg mb-4">Perfil dos Membros (Estado Civil)</h3>
+                    <div class="h-[250px]">
+                        <canvas id="graficoEstadoCivil"></canvas>
+                    </div>
+                </div>
+
+                <div class="card-dashboard">
+                    <h3 class="font-semibold text-lg mb-4">Ações Rápidas</h3>
+                    <div class="space-y-3">
+                        <button onclick="irParaCadastro()" class="w-full p-3 bg-primary/5 hover:bg-primary/10 text-primary rounded-lg flex items-center gap-3 transition-colors">
+                            <i class="fa fa-user-plus text-lg"></i>
+                            <div class="text-left">
+                                <div class="font-medium">Novo Membro</div>
+                                <div class="text-xs text-gray-500">Cadastrar pessoa nova</div>
+                            </div>
+                        </button>
+                        <button onclick="irParaLista()" class="w-full p-3 bg-secondary/5 hover:bg-secondary/10 text-secondary rounded-lg flex items-center gap-3 transition-colors">
+                            <i class="fa fa-list text-lg"></i>
+                            <div class="text-left">
+                                <div class="font-medium">Ver Todos</div>
+                                <div class="text-xs text-gray-500">Gerenciar membros</div>
+                            </div>
+                        </button>
+                        <button onclick="irParaAniversariantes()" class="w-full p-3 bg-warning/5 hover:bg-warning/10 text-warning rounded-lg flex items-center gap-3 transition-colors">
+                            <i class="fa fa-birthday-cake text-lg"></i>
+                            <div class="text-left">
+                                <div class="font-medium">Aniversariantes</div>
+                                <div class="text-xs text-gray-500">Ver aniversariantes do mês</div>
+                            </div>
+                        </button>
+                        <button onclick="irParaDepartamentos()" class="w-full p-3 bg-roxo/5 hover:bg-roxo/10 text-roxo rounded-lg flex items-center gap-3 transition-colors">
+                            <i class="fa fa-sitemap text-lg"></i>
+                            <div class="text-left">
+                                <div class="font-medium">Departamentos</div>
+                                <div class="text-xs text-gray-500">Gerenciar equipes</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mais Estatísticas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-dashboard">
+                    <h3 class="font-semibold text-lg mb-3">Faixa Etária</h3>
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center"><span class="text-gray-600">Até 18 anos</span><span id="idade18" class="font-bold">0</span></li>
+                        <li class="flex justify-between items-center"><span class="text-gray-600">19 a 35 anos</span><span id="idade35" class="font-bold">0</span></li>
+                        <li class="flex justify-between items-center"><span class="text-gray-600">36 a 55 anos</span><span id="idade55" class="font-bold">0</span></li>
+                        <li class="flex justify-between items-center"><span class="text-gray-600">Acima de 55 anos</span><span id="idadeMais" class="font-bold">0</span></li>
+                    </ul>
+                </div>
+                <div class="card-dashboard">
+                    <h3 class="font-semibold text-lg mb-3">Escolaridade</h3>
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center"><span class="text-gray-600">Fundamental</span><span id="escFundamental" class="font-bold">0</span></li>
+                        <li class="flex justify-between items-center"><span class="text-gray-600">Médio</span><span id="escMedio" class="font-bold">0</span></li>
+                        <li class="flex justify-between items-center"><span class="text-gray-600">Superior+</span><span id="escSuperior" class="font-bold">0</span></li>
+                    </ul>
+                </div>
+                <div class="card-dashboard">
+                    <h3 class="font-semibold text-lg mb-3">Igreja de Origem</h3>
+                    <div id="origemIgreja" class="space-y-2 max-h-[150px] overflow-y-auto scrollbar-hide"><p class="text-gray-500 text-sm">Sem dados cadastrados</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TELA DE ANIVERSARIANTES ========== -->
+        <div id="telaAniversariantes" class="hidden">
+            <header class="mb-8">
+                <h2 class="text-[24px] font-bold text-neutral flex items-center gap-2">
+                    <i class="fa fa-birthday-cake text-warning"></i> Aniversariantes
+                </h2>
+                <p class="text-gray-500 text-sm">Confira quem está fazendo aniversário hoje, essa semana e esse mês</p>
+            </header>
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <label for="filtroMes" class="font-medium text-gray-700">Mês:</label>
+                    <select id="filtroMes" class="input-style w-auto">
+                        <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option>
+                        <option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option>
+                        <option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                    </select>
+                </div>
+                <div class="text-sm text-gray-500">Total: <span id="totalAniversariantesMes" class="font-bold text-primary">0</span></div>
+            </div>
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><span class="w-8 h-8 rounded-full bg-success text-white flex items-center justify-center text-sm">Hoje</span></h3>
+                <div id="listaHoje" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Ninguém faz aniversário hoje 🎉</div></div>
+            </div>
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><span class="w-8 h-8 rounded-full bg-warning text-white flex items-center justify-center text-sm">Semana</span></h3>
+                <div id="listaSemana" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Nenhum aniversariante essa semana</div></div>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm">Mês</span></h3>
+                <div id="listaMes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Nenhum aniversariante esse mês</div></div>
+            </div>
+        </div>
+
+        <!-- ========== TELA DE DEPARTAMENTOS ========== -->
+        <div id="telaDepartamentos" class="hidden">
+            <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-[24px] font-bold text-neutral flex items-center gap-2">
+                        <i class="fa fa-sitemap text-roxo"></i> Departamentos
+                    </h2>
+                    <p class="text-gray-500 text-sm">Gerencie os departamentos, ministérios e equipes da igreja</p>
+                </div>
+                <div>
+                    <button id="btnNovoDepartamento" class="px-4 py-2 bg-roxo text-white rounded-lg hover:bg-roxo/90 transition-all flex items-center gap-2">
+                        <i class="fa fa-plus"></i> Novo Departamento
+                    </button>
+                </div>
+            </header>
+
+            <!-- FORMULÁRIO DE CADASTRO -->
+            <div id="formDepartamentoContainer" class="hidden bg-white rounded-xl shadow-sm p-6 mb-8">
+                <h3 id="tituloFormDepartamento" class="text-lg font-semibold mb-4">Cadastrar Novo Departamento</h3>
+                <form id="formDepartamento" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="hidden" id="idDepartamento" value="">
+                    
+                    <div class="form-group-spacing md:col-span-2">
+                        <label class="label-style">Nome do Departamento <span class="text-danger">*</span></label>
+                        <input type="text" name="nome" class="input-style" placeholder="Ex: Louvor, Ensino, Administração..." required>
+                    </div>
+
+                    <div class="form-group-spacing md:col-span-2">
+                        <label class="label-style">Descrição</label>
+                        <textarea name="descricao" class="input-style" rows="3" placeholder="Descreva a função e objetivos deste departamento"></textarea>
+                    </div>
+
+                    <div class="form-group-spacing">
+                        <label class="label-style">Líder Responsável</label>
+                        <select name="liderId" id="selectLider" class="input-style">
+                            <option value="">Selecione um membro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-spacing">
+                        <label class="label-style">Contato</label>
+                        <input type="text" name="contato" class="input-style" placeholder="Telefone ou e-mail do departamento">
+                    </div>
+
+                    <div class="md:col-span-2 flex gap-3 justify-end">
+                        <button type="button" id="btnCancelarDepartamento" class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-all">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-roxo text-white rounded-lg hover:bg-roxo/90 transition-all">
+                            Salvar Departamento
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LISTA DE DEPARTAMENTOS -->
+            <div id="listaDepartamentos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-8 rounded-lg shadow-sm text-center text-gray-500 col-span-full">
+                    <i class="fa fa-sitemap text-4xl mb-3 text-gray-300"></i>
+                    <p>Nenhum departamento cadastrado ainda.</p>
+                    <button onclick="mostrarFormDepartamento()" class="mt-3 text-roxo hover:underline">Cadastrar primeiro departamento</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TELA DE LISTAGEM DE MEMBROS ========== -->
+        <div id="telaListagem" class="hidden">
+            <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-[24px] font-bold text-neutral">Membros Cadastrados</h2>
+                    <p class="text-gray-500 text-sm">Lista de todos os membros da igreja</p>
+                </div>
+                <div>
+                    <button id="btnNovoCadastro" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2">
+                        <i class="fa fa-plus"></i> Novo Cadastro
+                    </button>
+                </div>
+            </header>
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead><tr class="border-b border-gray-200"><th class="py-3 px-2 font-semibold text-gray-700">Nome Completo</th><th class="py-3 px-2 font-semibold text-gray-700">Cidade/UF</th><th class="py-3 px-2 font-semibold text-gray-700">Contato</th><th class="py-3 px-2 font-semibold text-gray-700">Ações</th></tr></thead>
+                        <tbody id="listaMembros"><tr><td colspan="4" class="py-4 px-2 text-center text-gray-500">Nenhum membro cadastrado ainda.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TELA DE CADASTRO/EDIÇÃO MEMBROS ========== -->
+        <div id="telaCadastro" class="hidden">
+            <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 id="tituloCadastro" class="text-[24px] font-bold text-neutral">Cadastro de Membro</h2>
+                    <p class="text-gray-500 text-sm">Preencha todos os dados do membro com atenção</p>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" id="btnVoltarLista" class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2">
+                        <i class="fa fa-arrow-left"></i> Voltar
+                    </button>
+                    <button type="button" id="limparDados" class="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2">
+                        <i class="fa fa-eraser"></i> Limpar
+                    </button>
+                    <button type="submit" form="formCadastro" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2">
+                        <i class="fa fa-save"></i> <span id="textoBotaoSalvar">Salvar Cadastro</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Abas -->
+            <div class="border-b border-gray-200 mb-6">
+                <div class="flex flex-wrap gap-6">
+                    <button class="tab-active px-1 py-3 text-sm" data-tab="dados-pessoais">Dados Pessoais</button>
+                    <button class="px-1 py-3 text-sm text-gray-600 hover:text-primary transition-colors" data-tab="dados-familiares">Dados Familiares</button>
+                    <button class="px-1 py-3 text-sm text-gray-600 hover:text-primary transition-colors" data-tab="dados-eclesiasticos">Dados Eclesiásticos</button>
+                </div>
+            </div>
+
+            <!-- Formulário -->
+            <form id="formCadastro" class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <input type="hidden" id="idEdicao" value="">
+
+                <div id="dados-pessoais" class="tab-content block">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+                        <div class="form-group-spacing md:col-span-3">
+                            <label class="label-style">Nome Completo <span class="text-danger">*</span></label>
+                            <input type="text" name="nome_completo" class="input-style" placeholder="Digite o nome completo do membro" required>
+                        </div>
+                        <div class="form-group-spacing md:col-span-2">
+    <label class="label-style">Logradouro (Rua, Avenida, etc.)</label>
+    <input type="text" name="logradouro" class="input-style" placeholder="Rua, Avenida, Travessa...">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Número</label>
+    <input type="text" name="numero" class="input-style" placeholder="Nº">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Complemento</label>
+    <input type="text" name="complemento" class="input-style" placeholder="Casa, Apto, Bloco...">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Telefone</label>
+    <input type="text" name="telefone" class="input-style" placeholder="(00) 00000-0000">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Telefone para Recado</label>
+    <input type="text" name="telefone_recado" class="input-style" placeholder="(00) 00000-0000">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Bairro</label>
+    <input type="text" name="bairro" class="input-style" placeholder="Nome do bairro">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">Cidade</label>
+    <input type="text" name="cidade" class="input-style" placeholder="Cidade">
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">UF</label>
+    <select name="uf" class="input-style">
+        <option value="">Selecione</option>
+        <option value="AC">AC</option>
+        <option value="AL">AL</option>
+        <option value="AP">AP</option>
+        <option value="AM">AM</option>
+        <option value="BA">BA</option>
+        <option value="CE">CE</option>
+        <option value="DF">DF</option>
+        <option value="ES">ES</option>
+        <option value="GO">GO</option>
+        <option value="MA">MA</option>
+        <option value="MT">MT</option>
+        <option value="MS">MS</option>
+        <option value="MG">MG</option>
+        <option value="PA">PA</option>
+        <option value="PB">PB</option>
+        <option value="PR">PR</option>
+        <option value="PE">PE</option>
+        <option value="PI">PI</option>
+        <option value="RJ">RJ</option>
+        <option value="RN">RN</option>
+        <option value="RS">RS</option>
+        <option value="RO">RO</option>
+        <option value="RR">RR</option>
+        <option value="SC">SC</option>
+        <option value="SP">SP</option>
+        <option value="SE">SE</option>
+        <option value="TO">TO</option>
+    </select>
+</div>
+
+<div class="form-group-spacing">
+    <label class="label-style">CEP</label>
+    <input type="text" name="cep" class="input-style" placeholder="00000-000">
+</div>
+                            <div class="form-group-spacing md:col-span-2">
+    <label class="label-style">E-mail</label>
+    <input type="email" name="email" class="input-style" placeholder="exemplo@email.com">
+</div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Escolaridade</label>
+                            <select name="escolaridade" class="input-style">
+                                <option value="">Selecione</option>
+                                <option value="fundamental_completo">Fundamental Completo</option>
+                                <option value="fundamental_incompleto">Fundamental Incompleto</option>
+                                <option value="medio_completo">Médio Completo</option>
+                                <option value="medio_incompleto">Médio Incompleto</option>
+                                <option value="superior_completo">Superior Completo</option>
+                                <option value="superior_incompleto">Superior Incompleto</option>
+                                <option value="pos_graduacao">Pós-Graduação</option>
+                            </select>
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Ocupação</label>
+                            <input type="text" name="ocupacao" class="input-style" placeholder="Profissão / Ocupação">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Data de Nascimento</label>
+                            <input type="date" name="data_nascimento" class="input-style">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Natural de (Cidade/UF)</label>
+                            <input type="text" name="naturalidade" class="input-style" placeholder="Cidade - UF">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">RG</label>
+                            <input type="text" name="rg" class="input-style" placeholder="Número do RG">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Órgão Expedidor</label>
+                            <input type="text" name="orgao_expedidor" class="input-style" placeholder="Ex: DETRAN">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Data de Expedição</label>
+                            <input type="date" name="data_expedicao" class="input-style">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">CPF</label>
+                            <input type="text" name="cpf" class="input-style" placeholder="000.000.000-00" maxlength="14">
+                        </div>
+                        <div class="form-group-spacing">
+    <label class="label-style">Sexo</label>
+    <select name="sexo" class="input-style">
+        <option value="">Selecione</option>
+        <option value="masculino">Masculino</option>
+        <option value="feminino">Feminino</option>
+    </select>
+</div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Estado Civil</label>
+                            <select name="estado_civil" class="input-style">
+                                <option value="">Selecione</option>
+                                <option value="solteiro">Solteiro(a)</option><option value="casado">Casado(a)</option>
+                                <option value="divorciado">Divorciado(a)</option><option value="viuvo">Viúvo(a)</option>
+                                <option value="uniao_estavel">União Estável</option>
+                            </select>
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Data de Casamento</label>
+                            <input type="date" name="data_casamento" class="input-style">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dados-familiares" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div class="form-group-spacing">
+                            <label class="label-style">Cônjuge</label>
+                            <input type="text" name="conjuge" class="input-style" placeholder="Nome completo do cônjuge">
+                        </div>
+                        <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg mb-2">
+                            <h4 class="font-medium text-gray-700 mb-3">Filhos</h4>
+                            <div id="filhosContainer" class="space-y-3 mb-3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 filho-item">
+                                    <input type="text" name="filho_nome[]" class="input-style" placeholder="Nome do filho(a)">
+                                    <input type="date" name="filho_data_nasc[]" class="input-style" placeholder="Data de nascimento">
+                                </div>
+                            </div>
+                            <button type="button" id="addFilho" class="text-primary text-sm flex items-center gap-2 hover:underline">
+                                <i class="fa fa-plus-circle"></i> Adicionar outro filho
+                            </button>
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Nome do Pai</label>
+                            <input type="text" name="pai" class="input-style" placeholder="Nome completo do pai">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Nome da Mãe</label>
+                            <input type="text" name="mae" class="input-style" placeholder="Nome completo da mãe">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dados-eclesiasticos" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div class="form-group-spacing">
+                            <label class="label-style">Data de Batismo</label>
+                            <input type="date" name="data_batismo" class="input-style">
+                        </div>
+                        <div class="form-group-spacing">
+                            <label class="label-style">Igreja de Batismo</label>
+                            <input type="text" name="igreja_batismo" class="input-style" placeholder="Nome da igreja onde foi batizado">
+                        </div>
+                        <div class="form-group-spacing md:col-span-2">
+                            <label class="label-style">Igreja Anterior</label>
+                            <input type="text" name="igreja_anterior" class="input-style" placeholder="Nome e cidade da igreja que frequentava anteriormente">
+                        </div>
+                        <div class="form-group-spacing md:col-span-2">
+                            <label class="label-style">Pastor que realizou o batismo</label>
+                            <input type="text" name="pastor_batismo" class="input-style" placeholder="Nome completo do pastor">
+                        </div>
+                        
+                        <div class="form-group-spacing md:col-span-2">
+                            <label class="label-style">Cargos já exercidos</label>
+                            <textarea name="cargos_exercidos" class="input-style" rows="3" placeholder="Descreva os cargos, ministérios ou funções que já exerceu em igrejas"></textarea>
+                        </div>
+                        <div class="form-group-spacing md:col-span-2">
+                            <label class="label-style">Deseja exercer alguma função na igreja? Se sim, qual?</label>
+                            <textarea name="deseja_funcao" class="input-style" rows="2" placeholder="Informe se tem interesse em alguma função específica"></textarea>
+                        </div>
+                        <div class="form-group-spacing md:col-span-2">
+                            <label class="label-style">Talentos / Ministérios que possui</label>
+                            <textarea name="talentos" class="input-style" rows="3" placeholder="Ex: Ensino, louvor, administração..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+<!-- ========== TELA FINANCEIRO ========== -->
+<div id="telaFinanceiro" class="hidden">
+
+    <header class="mb-8">
+        <h2 class="text-[24px] font-bold text-neutral">
+            Financeiro
+        </h2>
+        <p class="text-gray-500 text-sm">
+            Controle financeiro da igreja
+        </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Entradas</p>
+            <h3 id="totalEntradas"
+                class="text-3xl font-bold text-success">
+                R$ 0,00
+            </h3>
+        </div>
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Saídas</p>
+            <h3 id="totalSaidas"
+                class="text-3xl font-bold text-danger">
+                R$ 0,00
+            </h3>
+        </div>
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Saldo</p>
+            <h3 id="saldoAtual"
+                class="text-3xl font-bold text-primary">
+                R$ 0,00
+            </h3>
+        </div>
+
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+
+        <h3 class="font-semibold mb-4">
+            Novo Lançamento
+        </h3>
+
+        <form id="formFinanceiro"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <select id="tipoFinanceiro"
+                    class="input-style"
+                    required>
+                <option value="">Tipo</option>
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+            </select>
+
+            <input type="date"
+                   id="dataFinanceiro"
+                   class="input-style"
+                   required>
+
+            <input type="text"
+                   id="categoriaFinanceiro"
+                   class="input-style"
+                   placeholder="Categoria"
+                   required>
+
+            <input type="number"
+                   id="valorFinanceiro"
+                   class="input-style"
+                   placeholder="Valor"
+                   step="0.01"
+                   required>
+
+            <textarea id="descricaoFinanceiro"
+                      class="input-style md:col-span-2"
+                      placeholder="Descrição"></textarea>
+
+            <button type="submit"
+                    class="bg-primary text-white px-4 py-2 rounded-lg">
+                Salvar Lançamento
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm">
+
+    <div class="mb-4">
+        <label class="label-style">Relatório por Mês</label>
+
+        <select id="filtroMesFinanceiro" class="input-style">
+            <option value="">Todos os Meses</option>
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+        </select>
+    </div>
+
+<button
+    onclick="imprimirRelatorioFinanceiroMes()"
+    class="mt-3 px-4 py-2 bg-primary text-white rounded-lg">
+    <i class="fa fa-print"></i>
+    Imprimir Relatório do Mês
+</button>
+
+    <h3 class="font-semibold mb-4">
+        Histórico Financeiro
+    </h3>
+
+    <table class="w-full">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaFinanceiro">
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ========== TELA RELATÓRIOS ========== -->
+<div id="telaRelatorios" class="hidden">
+    <header class="mb-8">
+        <h2 class="text-[24px] font-bold text-neutral">
+            Relatórios
+        </h2>
+        <p class="text-gray-500 text-sm">
+            Relatórios gerais dos membros
+        </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Total de Membros</p>
+            <h3 id="relTotalMembros" class="text-3xl font-bold">
+                0
+            </h3>
+        </div>
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Batizados</p>
+            <h3 id="relBatizados" class="text-3xl font-bold text-success">
+                0
+            </h3>
+        </div>
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Homens</p>
+            <h3 id="relHomens" class="text-3xl font-bold text-primary">
+                0
+            </h3>
+        </div>
+
+        <div class="card-dashboard">
+            <p class="text-sm text-gray-500">Mulheres</p>
+            <h3 id="relMulheres" class="text-3xl font-bold text-warning">
+                0
+            </h3>
+        </div>
+
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm">
+        <button onclick="imprimirRelatorio()"
+            class="px-4 py-2 bg-primary text-white rounded-lg">
+            <i class="fa fa-print"></i>
+            Imprimir Relatório
+        </button>
+    </div>
+</div>
+
+<div id="telaConfiguracoes" class="hidden">
+
+```
+<header class="mb-8">
+    <h2 class="text-[24px] font-bold text-neutral">
+        Configurações do Sistema
+    </h2>
+    <p class="text-gray-500 text-sm">
+        Informações da igreja
+    </p>
+</header>
+
+<div class="bg-white p-6 rounded-xl shadow-sm">
+
+    <form id="formConfiguracoes">
+
+        <div class="mb-4">
+            <label class="label-style">Nome da Igreja</label>
+            <input type="text" id="nomeIgreja" class="input-style">
+        </div>
+
+        <div class="mb-4">
+            <label class="label-style">Pastor Responsável</label>
+            <input type="text" id="pastorIgreja" class="input-style">
+        </div>
+
+        <div class="mb-4">
+            <label class="label-style">CNPJ</label>
+            <input type="text" id="cnpjIgreja" class="input-style">
+        </div>
+
+        <div class="mb-4">
+            <label class="label-style">Telefone</label>
+            <input type="text" id="telefoneIgreja" class="input-style">
+        </div>
+
+        <button
+            type="submit"
+            class="px-4 py-2 bg-primary text-white rounded-lg">
+            Salvar Configurações
+        </button>
+        
+        <button
+    type="button"
+    onclick="exportarBackup()"
+    class="px-4 py-2 bg-green-600 text-white rounded-lg mt-3">
+    ☁️ Fazer Backup
+</button>
+
+        <div class="mt-4">
+    <input
+        type="file"
+        id="arquivoBackup"
+        class="input-style mb-3">
+
+    <button
+        type="button"
+        onclick="restaurarBackup()"
+        class="px-4 py-2 bg-yellow-500 text-white rounded-lg">
+        Restaurar Backup
+    </button>
+</div>
+
+
+</div>
+
+
+    </main>
+
+    <!-- JavaScript COMPLETO E CORRIGIDO -->
+    <script>
+        // ========== GERENCIAMENTO DE TELAS ==========
+        const telaDashboard = document.getElementById('telaDashboard');
+        const telaListagem = document.getElementById('telaListagem');
+        const telaCadastro = document.getElementById('telaCadastro');
+        const telaAniversariantes = document.getElementById('telaAniversariantes');
+        const telaDepartamentos = document.getElementById('telaDepartamentos');
+        const telaFinanceiro = document.getElementById('telaFinanceiro');
+
+        
+        const menuDashboard = document.getElementById('menuDashboard');
+        const menuCadastrar = document.getElementById('menuCadastrar');
+        const menuListar = document.getElementById('menuListar');
+        const menuAniversariantes = document.getElementById('menuAniversariantes');
+        const menuDepartamentos = document.getElementById('menuDepartamentos');
+        const menuFinanceiro = document.getElementById('menuFinanceiro');
+
+        const menuRelatorios =
+document.getElementById('menuRelatorios');
+
+const telaRelatorios =
+document.getElementById('telaRelatorios');
+        const menuConfiguracoes =
+document.getElementById('menuConfiguracoes');
+
+const telaConfiguracoes =
+document.getElementById('telaConfiguracoes');
+        const btnNovoCadastro = document.getElementById('btnNovoCadastro');
+        const btnVoltarLista = document.getElementById('btnVoltarLista');
+        const filtroMes = document.getElementById('filtroMes');
+  
+    document.getElementById('filtroMes').value =
+(new Date().getMonth() + 1);
+
+        function esconderTodasTelas() {
+            telaDashboard.classList.add('hidden');
+            telaCadastro.classList.add('hidden');
+            telaListagem.classList.add('hidden');
+            telaAniversariantes.classList.add('hidden');
+            telaDepartamentos.classList.add('hidden');
+            telaRelatorios.classList.add('hidden');
+            telaConfiguracoes.classList.add('hidden');
+            telaFinanceiro.classList.add('hidden');        
+        }
+    
+
+        function marcarMenuAtivo(menuAtivo) {
+            [menuDashboard, menuCadastrar, menuListar, menuAniversariantes, menuDepartamentos].forEach(menu => {
+                menu.classList.remove('bg-primary/10', 'text-primary', 'font-medium');
+                menu.classList.add('text-gray-700', 'hover:bg-primary/5', 'hover:text-primary');
+            });
+            menuAtivo.classList.add('bg-primary/10', 'text-primary', 'font-medium');
+            menuAtivo.classList.remove('text-gray-700', 'hover:bg-primary/5', 'hover:text-primary');
+        }
+
+        function mostrarTelaDashboard() {
+            esconderTodasTelas();
+            telaDashboard.classList.remove('hidden');
+            marcarMenuAtivo(menuDashboard);
+            atualizarDashboard();
+        }
+
+        function mostrarTelaCadastro() {
+            esconderTodasTelas();
+            telaCadastro.classList.remove('hidden');
+            marcarMenuAtivo(menuCadastrar);
+        }
+
+        function mostrarTelaListagem() {
+            esconderTodasTelas();
+            telaListagem.classList.remove('hidden');
+            marcarMenuAtivo(menuListar);
+            carregarListaMembros();
+        }
+
+        function mostrarTelaAniversariantes() {
+            esconderTodasTelas();
+            telaAniversariantes.classList.remove('hidden');
+            marcarMenuAtivo(menuAniversariantes);
+            carregarAniversariantes();
+        }
+
+        function mostrarTelaDepartamentos() {
+            esconderTodasTelas();
+            telaDepartamentos.classList.remove('hidden');
+            marcarMenuAtivo(menuDepartamentos);
+            carregarListaDepartamentos();
+            preencherSelectLideres();
+        }
+
+        function mostrarTelaRelatorios() {
+    esconderTodasTelas();
+
+    telaRelatorios.classList.remove('hidden');
+
+    gerarRelatorio();
+}
+        // Funções auxiliares
+        function irParaCadastro() { mostrarTelaCadastro(); }
+        function irParaLista() { mostrarTelaListagem(); }
+        function irParaAniversariantes() { mostrarTelaAniversariantes(); }
+        function irParaDepartamentos() { mostrarTelaDepartamentos(); }
+
+        // Navegação Menu
+        menuDashboard.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaDashboard();
+});
+
+menuCadastrar.addEventListener('click', (e) => {
+    e.preventDefault();
+    limparFormulario();
+    mostrarTelaCadastro();
+});
+
+menuListar.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaListagem();
+});
+
+menuAniversariantes.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaAniversariantes();
+});
+document.getElementById('filtroMes')
+    .addEventListener('change', carregarAniversariantes);
+
+menuDepartamentos.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaDepartamentos();
+});
+
+menuFinanceiro.addEventListener('click', (e) => {
+
+    e.preventDefault();
+
+    mostrarTelaFinanceiro();
+
+});
+
+menuRelatorios.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaRelatorios();
+});
+
+
+menuConfiguracoes.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarTelaConfiguracoes();
+});
+
+        // ========== CONTROLE DE ABAS ==========
+        const tabs = document.querySelectorAll('[data-tab]');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        tabs.forEach(t => {
+            t.classList.remove('tab-active');
+            t.classList.add('text-gray-600');
+        });
+
+        tab.classList.add('tab-active');
+        tab.classList.remove('text-gray-600');
+
+        tabContents.forEach(content => {
+            content.classList.add('hidden');
+        });
+
+        const aba = document.getElementById(
+            tab.getAttribute('data-tab')
+        );
+
+        if (aba) {
+            aba.classList.remove('hidden');
+        }
+    });
+});
+
+        // ========== ADICIONAR FILHO ==========
+        document.getElementById('addFilho').addEventListener('click', function() {
+            const container = document.getElementById('filhosContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 filho-item';
+            newItem.innerHTML = `<input type="text" name="filho_nome[]" class="input-style" placeholder="Nome do filho(a)"><input type="date" name="filho_data_nasc[]" class="input-style">`;
+            container.appendChild(newItem);
+        });
+
+        // ========== LOCALSTORAGE - MEMBROS ==========
+        function obterTodosMembros() {
+            return JSON.parse(localStorage.getItem('listaMembros')) || [];
+        }
+
+        function salvarMembro(membro) {
+            const lista = obterTodosMembros();
+            if (membro.id) {
+                const index = lista.findIndex(item => item.id === membro.id);
+                if (index !== -1) lista[index] = membro;
+            } else {
+                membro.id = Date.now().toString();
+                lista.push(membro);
+            }
+            localStorage.setItem('listaMembros', JSON.stringify(lista));
+        }
+
+        function excluirMembro(id) {
+            if (confirm('Tem certeza que deseja excluir este membro? Essa ação não pode ser desfeita.')) {
+                const lista = obterTodosMembros().filter(item => item.id !== id);
+                localStorage.setItem('listaMembros', JSON.stringify(lista));
+                carregarListaMembros();
+                atualizarDashboard();
+            }
+        }
+
+        function carregarListaMembros() {
+            const lista = obterTodosMembros();
+            const tbody = document.getElementById('listaMembros');
+            tbody.innerHTML = '';
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="py-4 px-2 text-center text-gray-500">Nenhum membro cadastrado ainda.</td></tr>';
+                return;
+            }
+            lista.forEach(membro => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="py-3 px-2">${membro.nome_completo || '-'}</td>
+                    <td class="py-3 px-2">${membro.cidade || ''} - ${membro.uf || ''}</td>
+                    <td class="py-3 px-2">${membro.celular || membro.telefone || '-'}</td>
+                    <td class="py-3 px-2 flex gap-2">
+                        <button onclick="prepararEdicao('${membro.id}')" class="text-primary hover:text-primary/80" title="Editar">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button onclick="excluirMembro('${membro.id}')" class="text-danger hover:text-danger/80" title="Excluir">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ========== FORMULÁRIO MEMBROS ==========
+        function coletarDadosFormulario() {
+            const form = document.getElementById('formCadastro');
+            const dados = { id: document.getElementById('idEdicao').value };
+            form.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(campo => {
+                if (campo.name) {
+                    if (campo.name.endsWith('[]')) {
+                        const chave = campo.name.replace('[]', '');
+                        if (!dados[chave]) dados[chave] = [];
+                        if (campo.value) dados[chave].push(campo.value);
+                    } else {
+                        dados[campo.name] = campo.value;
+                    }
+                }
+            });
+            return dados;
+        }
+
+        function preencherFormulario(membro) {
+            document.getElementById('idEdicao').value = membro.id || '';
+            document.getElementById('tituloCadastro').textContent = 'Editar Cadastro de Membro';
+            document.getElementById('textoBotaoSalvar').textContent = 'Atualizar Cadastro';
+            
+            Object.keys(membro).forEach(chave => {
+                if (!Array.isArray(membro[chave])) {
+                    const campo = document.querySelector(`[name="${chave}"]`);
+                    if (campo) campo.value = membro[chave];
+                }
+            });
+
+            const container = document.getElementById('filhosContainer');
+            container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 filho-item"><input type="text" name="filho_nome[]" class="input-style"><input type="date" name="filho_data_nasc[]" class="input-style"></div>`;
+            
+            if (membro.filho_nome && membro.filho_nome.length > 0) {
+                container.innerHTML = '';
+                membro.filho_nome.forEach((nome, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 filho-item';
+                    div.innerHTML = `<input type="text" name="filho_nome[]" class="input-style" value="${nome}"><input type="date" name="filho_data_nasc[]" class="input-style" value="${membro.filho_data_nasc[i] || ''}">`;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function prepararEdicao(id) {
+            const membro = obterTodosMembros().find(item => item.id === id);
+            if (membro) { preencherFormulario(membro); mostrarTelaCadastro(); }
+        }
+
+        function limparFormulario() {
+            document.getElementById('formCadastro').reset();
+            document.getElementById('idEdicao').value = '';
+            document.getElementById('tituloCadastro').textContent = 'Cadastro de Membro';
+            document.getElementById('textoBotaoSalvar').textContent = 'Salvar Cadastro';
+            document.getElementById('filhosContainer').innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 filho-item"><input type="text" name="filho_nome[]" class="input-style" placeholder="Nome do filho(a)"><input type="date" name="filho_data_nasc[]" class="input-style"></div>`;
+        }
+
+        document.getElementById('formCadastro').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dados = coletarDadosFormulario();
+            salvarMembro(dados);
+            alert('✅ Dados salvos com sucesso!');
+            mostrarTelaListagem();
+            atualizarDashboard();
+        });
+
+        document.getElementById('limparDados').addEventListener('click', limparFormulario);
+
+        // ========== FUNÇÕES DO DASHBOARD ==========
+        let graficoEstadoCivil;
+
+        function calcularIdade(dataNascimento) {
+            if (!dataNascimento) return 0;
+            const hoje = new Date();
+            const nasc = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const m = hoje.getMonth() - nasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+            return idade;
+        }
+
+    
+
+        function atualizarDashboard() {
+            const membros = obterTodosMembros();
+            
+            document.getElementById('totalMembros').textContent = membros.length;
+            const batizados = membros.filter(m => m.data_batismo).length;
+            document.getElementById('totalBatizados').textContent = batizados;
+            
+            const totalHomens =
+    membros.filter(m => m.sexo === 'masculino').length;
+
+const totalMulheres =
+    membros.filter(m => m.sexo === 'feminino').length;
+
+document.getElementById('totalHomens').textContent =
+    totalHomens;
+
+document.getElementById('totalMulheres').textContent =
+    totalMulheres;
+
+            const estatEc = { solteiro: 0, casado: 0, divorciado: 0, viuvo: 0, uniao_estavel:0 };
+            membros.forEach(m => { if(m.estado_civil) estatEc[m.estado_civil]++ });
+            atualizarGrafico(estatEc);
+
+            let i18=0, i35=0, i55=0, iMais=0;
+            membros.forEach(m => {
+                const idade = calcularIdade(m.data_nascimento);
+                if(idade <= 18) i18++;
+                else if(idade <=35) i35++;
+                else if(idade <=55) i55++;
+                else if(idade >55) iMais++;
+            });
+            document.getElementById('idade18').textContent = i18;
+            document.getElementById('idade35').textContent = i35;
+            document.getElementById('idade55').textContent = i55;
+            document.getElementById('idadeMais').textContent = iMais;
+
+            // 4. Escolaridade
+            let eFund=0, eMedio=0, eSup=0;
+            membros.forEach(m => {
+                if(m.escolaridade?.includes('fundamental')) eFund++;
+                else if(m.escolaridade?.includes('medio')) eMedio++;
+                else if(m.escolaridade?.includes('superior') || m.escolaridade?.includes('pos')) eSup++;
+            });
+            document.getElementById('escFundamental').textContent = eFund;
+            document.getElementById('escMedio').textContent = eMedio;
+            document.getElementById('escSuperior').textContent = eSup;
+
+            // 5. Igreja de Origem
+            const divOrigem = document.getElementById('origemIgreja');
+            const igrejas = {};
+            membros.forEach(m => { if(m.igreja_anterior) igrejas[m.igreja_anterior] = (igrejas[m.igreja_anterior] || 0) +1; });
+            divOrigem.innerHTML = '';
+            if(Object.keys(igrejas).length ===0) divOrigem.innerHTML = '<p class="text-gray-500 text-sm">Sem dados cadastrados</p>';
+            else {
+                Object.entries(igrejas).forEach(([nome, qtd]) => {
+                    divOrigem.innerHTML += `<div class="flex justify-between items-center"><span class="text-sm">${nome}</span><span class="font-bold text-sm">${qtd}</span></div>`;
+                });
+            }
+        }
+
+        function atualizarGrafico(dados) {
+            const ctx = document.getElementById('graficoEstadoCivil').getContext('2d');
+            const labels = {
+                solteiro: 'Solteiro(a)', casado: 'Casado(a)', divorciado: 'Divorciado(a)',
+                viuvo: 'Viúvo(a)', uniao_estavel: 'União Estável'
+            };
+            const cores = ['#165DFF', '#00B42A', '#FF7D00', '#F53F3F', '#784FD1'];
+
+            if(graficoEstadoCivil) graficoEstadoCivil.destroy();
+
+            graficoEstadoCivil = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dados).map(k => labels[k]),
+                    datasets: [{
+                        data: Object.values(dados),
+                        backgroundColor: cores,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // ========== EVENTOS DE BOTÕES ==========
+        
+
+        document.getElementById('limparDados').addEventListener('click', limparFormulario);
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            mostrarTelaDashboard();
+        });
+        function carregarAniversariantes() {
+
+    const membros = obterTodosMembros();
+
+    const hoje = new Date();
+
+    const diaHoje = hoje.getDate();
+
+    const mesHoje = hoje.getMonth() + 1;
+
+    const mesSelecionado =
+        parseInt(document.getElementById('filtroMes').value);
+
+    const listaHoje = document.getElementById('listaHoje');
+    const listaSemana = document.getElementById('listaSemana');
+    const listaMes = document.getElementById('listaMes');
+
+    listaHoje.innerHTML = '';
+    listaSemana.innerHTML = '';
+    listaMes.innerHTML = '';
+
+
+    let qtdMes = 0;
+
+    membros.forEach(membro => {
+
+        if (!membro.data_nascimento) return;
+
+        const partes = membro.data_nascimento.split('-');
+
+const ano = parseInt(partes[0]);
+const mes = parseInt(partes[1]);
+const dia = parseInt(partes[2]);
+
+const dataNasc = new Date(ano, mes - 1, dia);
+
+        // Aniversariantes do mês
+        if (mes === mesSelecionado) {
+
+            qtdMes++;
+
+            listaMes.innerHTML += `
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <strong>${membro.nome_completo}</strong><br>
+                    ${dia}/${mes}
+                </div>
+            `;
+        }
+
+        // Aniversariantes de hoje
+        if (dia === diaHoje && mes === mesHoje) {
+
+            listaHoje.innerHTML += `
+                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-success">
+                    <strong>${membro.nome_completo}</strong><br>
+                    🎉 Faz aniversário hoje
+                </div>
+            `;
+        }
+
+        // Próximos 7 dias
+        const aniversarioAnoAtual = new Date(
+            hoje.getFullYear(),
+            mes - 1,
+            dia
+        );
+
+        const diferencaDias =
+            Math.ceil(
+                (aniversarioAnoAtual - hoje)
+                / (1000 * 60 * 60 * 24)
+            );
+
+        if (diferencaDias >= 0 && diferencaDias <= 7) {
+
+            listaSemana.innerHTML += `
+                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-warning">
+                    <strong>${membro.nome_completo}</strong><br>
+                    ${dia}/${mes}
+                </div>
+            `;
+        }
+
+    });
+
+    if (listaHoje.innerHTML === '') {
+        listaHoje.innerHTML =
+            '<div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Ninguém faz aniversário hoje 🎉</div>';
+    }
+
+    if (listaSemana.innerHTML === '') {
+        listaSemana.innerHTML =
+            '<div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Nenhum aniversariante essa semana</div>';
+    }
+
+    if (listaMes.innerHTML === '') {
+        listaMes.innerHTML =
+            '<div class="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500 col-span-full">Nenhum aniversariante esse mês</div>';
+    }
+
+    document.getElementById('totalAniversariantesMes').textContent =
+        qtdMes;
+}
+   
+// =============================
+// DEPARTAMENTOS
+// =============================
+
+const btnNovoDepartamento = document.getElementById('btnNovoDepartamento');
+const btnCancelarDepartamento = document.getElementById('btnCancelarDepartamento');
+const formDepartamento = document.getElementById('formDepartamento');
+const formDepartamentoContainer = document.getElementById('formDepartamentoContainer');
+
+function obterDepartamentos() {
+    return JSON.parse(localStorage.getItem('listaDepartamentos')) || [];
+}
+
+function salvarDepartamento(departamento) {
+    const lista = obterDepartamentos();
+
+    if (departamento.id) {
+        const index = lista.findIndex(d => d.id === departamento.id);
+
+        if (index !== -1) {
+            lista[index] = departamento;
+        }
+    } else {
+        departamento.id = Date.now().toString();
+        lista.push(departamento);
+    }
+
+    localStorage.setItem(
+        'listaDepartamentos',
+        JSON.stringify(lista)
+    );
+}
+
+function excluirDepartamento(id) {
+    if (!confirm('Deseja realmente excluir este departamento?')) {
+        return;
+    }
+
+    const lista = obterDepartamentos().filter(
+        dep => dep.id !== id
+    );
+
+    localStorage.setItem(
+        'listaDepartamentos',
+        JSON.stringify(lista)
+    );
+
+    carregarListaDepartamentos();
+}
+
+function mostrarFormDepartamento() {
+    formDepartamento.reset();
+    document.getElementById('idDepartamento').value = '';
+    document.getElementById('tituloFormDepartamento').textContent =
+        'Cadastrar Novo Departamento';
+
+    formDepartamentoContainer.classList.remove('hidden');
+}
+
+function esconderFormDepartamento() {
+    formDepartamentoContainer.classList.add('hidden');
+}
+
+btnNovoDepartamento.addEventListener(
+    'click',
+    mostrarFormDepartamento
+);
+
+btnCancelarDepartamento.addEventListener(
+    'click',
+    esconderFormDepartamento
+);
+
+formDepartamento.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const departamento = {
+        id: document.getElementById('idDepartamento').value,
+        nome: this.nome.value,
+        descricao: this.descricao.value,
+        liderId: this.liderId.value,
+        contato: this.contato.value
+    };
+
+    salvarDepartamento(departamento);
+
+    alert('Departamento salvo com sucesso!');
+
+    esconderFormDepartamento();
+    carregarListaDepartamentos();
+});
+
+function editarDepartamento(id) {
+    const departamento = obterDepartamentos().find(
+        d => d.id === id
+    );
+
+    if (!departamento) return;
+
+    document.getElementById('idDepartamento').value =
+        departamento.id;
+
+    formDepartamento.nome.value =
+        departamento.nome;
+
+    formDepartamento.descricao.value =
+        departamento.descricao;
+
+    formDepartamento.liderId.value =
+        departamento.liderId;
+
+    formDepartamento.contato.value =
+        departamento.contato;
+
+    document.getElementById('tituloFormDepartamento').textContent =
+        'Editar Departamento';
+
+    formDepartamentoContainer.classList.remove('hidden');
+}
+
+function carregarListaDepartamentos() {
+    const lista = obterDepartamentos();
+
+    const container =
+        document.getElementById('listaDepartamentos');
+
+    if (lista.length === 0) {
+        container.innerHTML = `
+            <div class="bg-white p-8 rounded-lg shadow-sm text-center text-gray-500 col-span-full">
+                <i class="fa fa-sitemap text-4xl mb-3 text-gray-300"></i>
+                <p>Nenhum departamento cadastrado.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const membros = obterTodosMembros();
+
+    container.innerHTML = '';
+
+    lista.forEach(dep => {
+
+        const lider = membros.find(
+            m => m.id === dep.liderId
+        );
+
+        container.innerHTML += `
+            <div class="card-departamento">
+                <div class="flex justify-between mb-3">
+                    <h3 class="font-bold text-lg">
+                        ${dep.nome}
+                    </h3>
+
+                    <div class="flex gap-3">
+                        <button
+                            onclick="editarDepartamento('${dep.id}')"
+                            class="text-primary">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+
+                        <button
+                            onclick="excluirDepartamento('${dep.id}')"
+                            class="text-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-gray-600 text-sm mb-4">
+                    ${dep.descricao || 'Sem descrição'}
+                </p>
+
+                <div class="text-sm space-y-2">
+                    <p>
+                        <strong>Líder:</strong>
+                        ${lider?.nome_completo || 'Não definido'}
+                    </p>
+
+                    <p>
+                        <strong>Contato:</strong>
+                        ${dep.contato || '-'}
+                    </p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function preencherSelectLideres() {
+    const select =
+        document.getElementById('selectLider');
+
+    const membros = obterTodosMembros();
+
+    select.innerHTML =
+        '<option value="">Selecione um membro</option>';
+
+    membros.forEach(membro => {
+        select.innerHTML += `
+            <option value="${membro.id}">
+                ${membro.nome_completo}
+            </option>
+        `;
+    });
+}
+ 
+function gerarRelatorio() {
+
+    const membros = obterTodosMembros();
+
+    document.getElementById('relTotalMembros').textContent =
+        membros.length;
+
+    const batizados =
+        membros.filter(m => m.data_batismo).length;
+
+    document.getElementById('relBatizados').textContent =
+        batizados;
+
+    const homens =
+        membros.filter(m => m.sexo === 'masculino').length;
+
+    const mulheres =
+        membros.filter(m => m.sexo === 'feminino').length;
+
+    document.getElementById('relHomens').textContent =
+        homens;
+
+    document.getElementById('relMulheres').textContent =
+        mulheres;
+}
+   
+function imprimirRelatorio() {
+
+    const conteudo = `
+        <h1>Relatório Geral da Igreja</h1>
+
+        <p>Total de membros:
+        ${document.getElementById('relTotalMembros').textContent}</p>
+
+        <p>Batizados:
+        ${document.getElementById('relBatizados').textContent}</p>
+
+        <p>Homens:
+        ${document.getElementById('relHomens').textContent}</p>
+
+        <p>Mulheres:
+        ${document.getElementById('relMulheres').textContent}</p>
+    `;
+
+    const janela = window.open('', '_blank');
+
+janela.document.write(html);
+
+janela.document.close();
+
+janela.focus();
+
+janela.onafterprint = function () {
+    janela.close();
+};
+
+setTimeout(() => {
+    janela.print();
+}, 500);
+}
+   
+function mostrarTelaConfiguracoes() {
+    esconderTodasTelas();
+
+    telaConfiguracoes.classList.remove('hidden');
+
+    carregarConfiguracoes();
+}
+
+function carregarConfiguracoes() {
+
+    const config =
+        JSON.parse(localStorage.getItem('configIgreja')) || {};
+
+    document.getElementById('nomeIgreja').value =
+        config.nomeIgreja || '';
+
+    document.getElementById('pastorIgreja').value =
+        config.pastorIgreja || '';
+
+    document.getElementById('cnpjIgreja').value =
+        config.cnpjIgreja || '';
+
+    document.getElementById('telefoneIgreja').value =
+        config.telefoneIgreja || '';
+}
+
+document.getElementById('formConfiguracoes')
+.addEventListener('submit', function(e){
+
+    e.preventDefault();
+
+    const dados = {
+        nomeIgreja:
+            document.getElementById('nomeIgreja').value,
+
+        pastorIgreja:
+            document.getElementById('pastorIgreja').value,
+
+        cnpjIgreja:
+            document.getElementById('cnpjIgreja').value,
+
+        telefoneIgreja:
+            document.getElementById('telefoneIgreja').value
+    };
+
+    localStorage.setItem(
+        'configIgreja',
+        JSON.stringify(dados)
+    );
+
+    alert('Configurações salvas com sucesso!');
+});
+
+function mostrarTelaFinanceiro() {
+
+    esconderTodasTelas();
+
+    telaFinanceiro.classList.remove('hidden');
+
+    carregarFinanceiro();
+}
+
+function obterLancamentos() {
+
+    return JSON.parse(
+        localStorage.getItem('financeiro')
+    ) || [];
+}
+
+function salvarLancamento(lancamento) {
+
+    const lista = obterLancamentos();
+
+    lista.push(lancamento);
+
+    localStorage.setItem(
+        'financeiro',
+        JSON.stringify(lista)
+    );
+}
+
+document.getElementById('formFinanceiro')
+.addEventListener('submit', function(e){
+
+    e.preventDefault();
+
+    salvarLancamento({
+
+        data:
+            document.getElementById('dataFinanceiro').value,
+
+        tipo:
+            document.getElementById('tipoFinanceiro').value,
+
+        categoria:
+            document.getElementById('categoriaFinanceiro').value,
+
+        valor:
+            parseFloat(
+                document.getElementById('valorFinanceiro').value
+            ),
+
+        descricao:
+            document.getElementById('descricaoFinanceiro').value
+    });
+
+    this.reset();
+
+    carregarFinanceiro();
+
+    alert('Lançamento salvo!');
+});
+
+function carregarFinanceiro() {
+
+    const lista = obterLancamentos();
+
+    const mesSelecionado =
+        document.getElementById('filtroMesFinanceiro').value;
+
+    let entradas = 0;
+    let saidas = 0;
+
+    const tabela =
+        document.getElementById('listaFinanceiro');
+
+    tabela.innerHTML = '';
+
+    lista.forEach(item => {
+
+        // FILTRO POR MÊS
+        if (mesSelecionado !== '') {
+
+            const partesData = item.data.split('-');
+            const mesLancamento = parseInt(partesData[1]);
+
+            if (mesLancamento !== parseInt(mesSelecionado)) {
+                return;
+            }
+        }
+
+        // SOMA ENTRADAS E SAÍDAS
+        if (item.tipo === 'entrada') {
+            entradas += Number(item.valor);
+        } else {
+            saidas += Number(item.valor);
+        }
+
+        // EXIBE NA TABELA
+        tabela.innerHTML += `
+            <tr class="border-b">
+                <td>${formatarData(item.data)}</td>
+                <td>${item.tipo}</td>
+                <td>${item.categoria}</td>
+                <td>R$ ${Number(item.valor).toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('totalEntradas').textContent =
+        'R$ ' + entradas.toFixed(2);
+
+    document.getElementById('totalSaidas').textContent =
+        'R$ ' + saidas.toFixed(2);
+
+    document.getElementById('saldoAtual').textContent =
+        'R$ ' + (entradas - saidas).toFixed(2);
+}
+
+document.getElementById('filtroMesFinanceiro')
+.addEventListener('change', carregarFinanceiro);
+
+// LOGIN SIMPLES
+
+const USUARIO_PADRAO = "admin";
+const SENHA_PADRAO = "123456";
+
+function fazerLogin() {
+
+    const usuario =
+        document.getElementById("usuario").value;
+
+    const senha =
+        document.getElementById("senha").value;
+
+    if (
+        usuario === USUARIO_PADRAO &&
+        senha === SENHA_PADRAO
+    ) {
+
+        sessionStorage.setItem("logado", "sim");
+
+        document
+            .getElementById("telaLogin")
+            .style.display = "none";
+
+    } else {
+
+        document.getElementById("erroLogin")
+            .textContent = "Usuário ou senha inválidos";
+
+    }
+}
+
+window.addEventListener("load", () => {
+
+    if (sessionStorage.getItem("logado") === "sim") {
+
+        document
+            .getElementById("telaLogin")
+            .style.display = "none";
+
+    }
+
+});
+
+function logout() {
+    sessionStorage.removeItem("logado");
+    location.reload();
+}
+
+localStorage.setItem(
+    "backup_" + Date.now(),
+    JSON.stringify(obterTodosMembros())
+);
+
+function exportarBackup() {
+
+    const dados = {
+        membros: localStorage.getItem("listaMembros"),
+        departamentos: localStorage.getItem("listaDepartamentos"),
+        financeiro: localStorage.getItem("financeiro"),
+        configuracoes: localStorage.getItem("configIgreja")
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(dados, null, 2)],
+        { type: "application/json" }
+    );
+
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+
+    link.download =
+        "backup-igreja-" +
+        new Date().toISOString().split("T")[0] +
+        ".json";
+
+    link.click();
+}
+
+function restaurarBackup() {
+
+    const arquivo =
+        document.getElementById("arquivoBackup")
+        .files[0];
+
+    const leitor = new FileReader();
+
+    leitor.onload = function(e) {
+
+        const dados =
+            JSON.parse(e.target.result);
+
+        localStorage.setItem(
+            "listaMembros",
+            dados.membros
+        );
+
+        localStorage.setItem(
+            "listaDepartamentos",
+            dados.departamentos
+        );
+
+        localStorage.setItem(
+            "financeiro",
+            dados.financeiro
+        );
+
+        localStorage.setItem(
+            "configIgreja",
+            dados.configuracoes
+        );
+
+        alert("Backup restaurado!");
+    };
+
+    leitor.readAsText(arquivo);
+}
+
+function formatarData(data) {
+
+    const partes = data.split('-');
+
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+}
+function imprimirRelatorioFinanceiroMes() {
+
+    const mesSelecionado =
+        document.getElementById('filtroMesFinanceiro').value;
+
+    const financeiro =
+        JSON.parse(localStorage.getItem('financeiro')) || [];
+
+    let registros = financeiro;
+
+    if (mesSelecionado) {
+        registros = financeiro.filter(item => {
+            const mes =
+                new Date(item.data).getMonth() + 1;
+
+            return mes == mesSelecionado;
+        });
+    }
+
+    let html = `
+        <h1>Relatório Financeiro</h1>
+        <table border="1" cellspacing="0" cellpadding="5" width="100%">
+            <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Categoria</th>
+                <th>Valor</th>
+                <th>Descrição</th>
+            </tr>
+    `;
+
+    registros.forEach(item => {
+
+        html += `
+            <tr>
+                <td>${item.data}</td>
+                <td>${item.tipo}</td>
+                <td>${item.categoria}</td>
+                <td>R$ ${parseFloat(item.valor).toFixed(2)}</td>
+                <td>${item.descricao || ''}</td>
+            </tr>
+        `;
+
+    });
+
+    html += `</table>`;
+
+    const janela = window.open('', '_blank');
+
+    janela.document.write(html);
+
+    janela.document.close();
+
+    janela.print();
+}
+
+   </script>
+<footer class="mt-10 py-6 border-t border-gray-200 text-center text-sm text-gray-500 bg-white">
+
+```
+<p class="font-semibold text-gray-700">
+    Desenvolvido por: José Henrique de Sousa
+</p>
+
+<p>
+    WhatsApp: (21) 98832-9413
+</p>
+
+<p>
+    E-mail: ryckydesousa2010@gmail.com
+</p>
+
+<p class="mt-2 text-xs">
+    © 2026 Todos os direitos reservados.
+</p>
+```
+
+</footer>
+
+
+
+</body>
+</html>
