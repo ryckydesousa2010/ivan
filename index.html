@@ -785,11 +785,12 @@
     <table class="w-full">
             <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Tipo</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                </tr>
+    <th>Data</th>
+    <th>Tipo</th>
+    <th>Categoria</th>
+    <th>Valor</th>
+    <th>Ações</th>
+</tr>
             </thead>
 
             <tbody id="listaFinanceiro">
@@ -970,13 +971,43 @@ document.getElementById('telaConfiguracoes');
     
 
         function marcarMenuAtivo(menuAtivo) {
-            [menuDashboard, menuCadastrar, menuListar, menuAniversariantes, menuDepartamentos].forEach(menu => {
-                menu.classList.remove('bg-primary/10', 'text-primary', 'font-medium');
-                menu.classList.add('text-gray-700', 'hover:bg-primary/5', 'hover:text-primary');
-            });
-            menuAtivo.classList.add('bg-primary/10', 'text-primary', 'font-medium');
-            menuAtivo.classList.remove('text-gray-700', 'hover:bg-primary/5', 'hover:text-primary');
-        }
+
+    [
+        menuDashboard,
+        menuCadastrar,
+        menuListar,
+        menuAniversariantes,
+        menuDepartamentos,
+        menuFinanceiro,
+        menuRelatorios,
+        menuConfiguracoes
+    ].forEach(menu => {
+
+        menu.classList.remove(
+            'bg-primary/10',
+            'text-primary',
+            'font-medium'
+        );
+
+        menu.classList.add(
+            'text-gray-700',
+            'hover:bg-primary/5',
+            'hover:text-primary'
+        );
+    });
+
+    menuAtivo.classList.add(
+        'bg-primary/10',
+        'text-primary',
+        'font-medium'
+    );
+
+    menuAtivo.classList.remove(
+        'text-gray-700',
+        'hover:bg-primary/5',
+        'hover:text-primary'
+    );
+}
 
         function mostrarTelaDashboard() {
             esconderTodasTelas();
@@ -1061,17 +1092,28 @@ menuFinanceiro.addEventListener('click', (e) => {
 
     mostrarTelaFinanceiro();
 
+    marcarMenuAtivo(menuFinanceiro);
+
 });
 
 menuRelatorios.addEventListener('click', (e) => {
+
     e.preventDefault();
+
     mostrarTelaRelatorios();
+
+    marcarMenuAtivo(menuRelatorios);
+
 });
 
-
 menuConfiguracoes.addEventListener('click', (e) => {
+
     e.preventDefault();
+
     mostrarTelaConfiguracoes();
+
+    marcarMenuAtivo(menuConfiguracoes);
+
 });
 
         // ========== CONTROLE DE ABAS ==========
@@ -1799,12 +1841,32 @@ function salvarLancamento(lancamento) {
     );
 }
 
+function excluirLancamento(id) {
+
+    if (!confirm('Deseja excluir este lançamento?')) {
+        return;
+    }
+
+    let lista = obterLancamentos();
+
+    lista = lista.filter(item => item.id != id);
+
+    localStorage.setItem(
+        'financeiro',
+        JSON.stringify(lista)
+    );
+
+    carregarFinanceiro();
+}
+
 document.getElementById('formFinanceiro')
 .addEventListener('submit', function(e){
 
     e.preventDefault();
 
     salvarLancamento({
+
+        id: Date.now(),
 
         data:
             document.getElementById('dataFinanceiro').value,
@@ -1868,13 +1930,21 @@ function carregarFinanceiro() {
 
         // EXIBE NA TABELA
         tabela.innerHTML += `
-            <tr class="border-b">
-                <td>${formatarData(item.data)}</td>
-                <td>${item.tipo}</td>
-                <td>${item.categoria}</td>
-                <td>R$ ${Number(item.valor).toFixed(2)}</td>
-            </tr>
-        `;
+    <tr class="border-b">
+        <td>${formatarData(item.data)}</td>
+        <td>${item.tipo}</td>
+        <td>${item.categoria}</td>
+        <td>R$ ${Number(item.valor).toFixed(2)}</td>
+
+        <td>
+            <button
+                onclick="excluirLancamento(${item.id})"
+                class="text-red-600 hover:text-red-800">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+`;
     });
 
     document.getElementById('totalEntradas').textContent =
@@ -2071,6 +2141,26 @@ function imprimirRelatorioFinanceiroMes() {
     janela.print();
 }
 
+function excluirLancamentoFinanceiro(id) {
+
+    if (!confirm('Deseja realmente excluir este lançamento?')) {
+        return;
+    }
+
+    let financeiro =
+        JSON.parse(localStorage.getItem('financeiro')) || [];
+
+    financeiro =
+        financeiro.filter(item => item.id != id);
+
+    localStorage.setItem(
+        'financeiro',
+        JSON.stringify(financeiro)
+    );
+
+    carregarFinanceiro();
+    atualizarResumoFinanceiro();
+}
    </script>
 <footer class="mt-10 py-6 border-t border-gray-200 text-center text-sm text-gray-500 bg-white">
 
